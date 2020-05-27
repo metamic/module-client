@@ -1,61 +1,146 @@
 <?php
-
-	class socialxeAdminView extends socialxe {
-
+	/**
+	 * @class  socialxeAdminView
+     * @author CONORY (https://xe.conory.com)
+	 * @brief The admin view class of the socialxe module
+	 */
+	 
+	class socialxeAdminView extends socialxe
+	{
 		/**
-		* @brief ì´ˆê¸°í™”
-		**/
-		function init() {
+		 * @brief Initialization
+		 */
+		function init()
+		{
+			Context::set('config', $this->config);
+			
+		    // ·Î±× ±â·Ï ÀÚµ¿ »èÁ¦
+            if($this->module_config->delete_auto_log_record)
+			{
+				$args = new stdClass;
+                $args->regdate_less = date('YmdHis', strtotime(sprintf('-%d day', $this->module_config->delete_auto_log_record)));
+                executeQuery('socialxe.deleteLogRecordLess', $args);
+            }
+			
+			$this->setTemplatePath($this->module_path . 'tpl');
+			
+			Context::addJsFile($this->module_path . 'tpl/js/socialxe_admin.js');
 		}
-
+		
 		/**
-		* @brief ì„¤ì •
-		**/
-		function dispSocialxeAdminConfig() {
-			// ì„¤ì • ì •ë³´ë¥¼ ë°›ì•„ì˜´
-			Context::set('config',$this->config);
-
-			// ì„œë¹„ìŠ¤ ëª©ë¡
-			$provider_list = $this->providerManager->getFullProviderList();
-			Context::set('provider_list', $provider_list);
-
-			// ìŠ¤í‚¨ ë¦¬ìŠ¤íŠ¸
-			$oModuleModel = &getModel('module');
-			$skin_list = $oModuleModel->getSkins($this->module_path);
-			Context::set('skin_list', $skin_list);
-
-			// í…œí”Œë¦¿ íŒŒì¼ ì§€ì •
-			$this->setTemplatePath($this->module_path.'tpl');
-			$this->setTemplateFile('index');
+		 * @brief API ¼³Á¤
+		 */
+		function dispSocialxeAdminSettingApi()
+		{
+			$this->setTemplateFile('api_setting');
 		}
-
-		// bit.ly í†µê³„
-		function dispSocialxeAdminBitly(){
-			// ì„¤ì • ì •ë³´ë¥¼ ë°›ì•„ì˜´
-			Context::set('config',$this->config);
-
-			// bit.ly ì„¤ì •ì´ ë˜ì–´ ìžˆì§€ ì•Šìœ¼ë©´ í™˜ê²½ì„¤ì •ìœ¼ë¡œ ë³´ë‚¸ë‹¤.
-			if (!$this->config->bitly_username || !$this->config->bitly_api_key){
-				header('Location: ' . getNotEncodedUrl('act', 'dispSocialxeAdminConfig'));
-				return;
+		
+		/**
+		 * @brief È¯°æ¼³Á¤
+		 */
+		function dispSocialxeAdminSetting()
+		{
+			// ·¹ÀÌ¾Æ¿ô ¸ñ·Ï
+			Context::set('layout_list', getModel('layout')->getLayoutList());
+			Context::set('mlayout_list', getModel('layout')->getLayoutList(0, 'M'));
+			
+			// ½ºÅ² ¸ñ·Ï
+            Context::set('skin_list', getModel('module')->getSkins($this->module_path));
+			Context::set('mskin_list', getModel('module')->getSkins($this->module_path, 'm.skins'));
+			
+			// SNS ¼­ºñ½º
+			Context::set('default_services', $this->default_services);
+			
+			// Ãß°¡ Á¤º¸ ÀÔ·Â
+			Context::set('input_add_info', array('agreement', 'user_id', 'nick_name', 'require_add_info'));
+			
+			$this->setTemplateFile('setting');
+		}
+		
+		/**
+		 * @brief ·Î±× ±â·Ï
+		 */
+		function dispSocialxeAdminLogRecord()
+		{
+			// ·Î±× Ä«Å×°í¸®
+            Context::set('category_list', array('auth_request', 'register', 'sns_clear', 'login', 'linkage', 'delete_member', 'unknown'));
+			
+            // °Ë»ö ¿É¼Ç
+			$search_option = array('nick_name', getModel('module')->getModuleConfig('member')->identifier, 'content', 'ipaddress');
+            Context::set('search_option', $search_option);
+			
+			$args = new stdClass;
+			
+            if(($search_target = trim(Context::get('search_target'))) && in_array($search_target, $search_option))
+			{
+				$args->$search_target = str_replace(' ', '%', trim(Context::get('search_keyword')));
+            }
+			
+		    $args->page = Context::get('page');
+			$args->category = Context::get('search_category');
+			
+            $output = executeQuery('socialxe.getLogRecordList', $args);
+			
+            Context::set('total_count', $output->page_navigation->total_count);
+            Context::set('total_page', $output->page_navigation->total_page);
+            Context::set('page', $output->page);
+            Context::set('log_record_list', $output->data);
+            Context::set('page_navigation', $output->page_navigation);
+			
+			$this->setTemplateFile('log_record');
+		}
+		
+		/**
+		 * @brief SNS ¸ñ·Ï
+		 */
+		function dispSocialxeAdminSnsList()
+		{
+			Context::set('sns_services', $this->config->sns_services);
+			
+            // °Ë»ö ¿É¼Ç
+			$search_option = array('nick_name', getModel('module')->getModuleConfig('member')->identifier);
+            Context::set('search_option', $search_option);
+			
+			$args = new stdClass;
+			
+            if(($search_target = trim(Context::get('search_target'))) && in_array($search_target, $search_option))
+			{
+				$args->$search_target = str_replace(' ', '%', trim(Context::get('search_keyword')));
+            }
+			
+		    $args->page = Context::get('page');
+            $output = executeQuery('socialxe.getMemberSnsList', $args);
+			
+			if($output->data)
+			{
+				$oSocialxeModel = getModel('socialxe');
+				
+				foreach($output->data as $key => $val)
+				{
+					$val->service = array();
+					
+					foreach($this->config->sns_services as $key2 => $val2)
+					{
+						if(($sns_info = $oSocialxeModel->getMemberSns($val2, $val->member_srl)) && $sns_info->name)
+						{
+							$val->service[$val2] = sprintf('<a href="%s" target="_blank">%s</a>', $sns_info->profile_url, $sns_info->name);
+						}
+						else
+						{
+							$val->service[$val2] = Context::getLang('status_sns_no_register');
+						}
+					}
+					
+					$output->data[$key] = $val;	
+				}
 			}
-
-			// ëª©ë¡ì„ êµ¬í•˜ê¸° ìœ„í•œ ì˜µì…˜
-			$args->page = Context::get('page');
-			$args->title = Context::get('title');
-			$output = executeQueryArray('socialxe.getBitlyPageList', $args);
-			if (!$output->toBool()) return $output;
-
-			// í…œí”Œë¦¿ì— ì“°ê¸° ìœ„í•´ì„œ comment_model::getTotalCommentList() ì˜ return objectì— ìžˆëŠ” ê°’ë“¤ì„ ì„¸íŒ…
-			Context::set('total_count', $output->total_count);
-			Context::set('total_page', $output->total_page);
-			Context::set('page', $output->page);
-			Context::set('bitly_list', $output->data);
-			Context::set('page_navigation', $output->page_navigation);
-
-			// í…œí”Œë¦¿ íŒŒì¼ ì§€ì •
-			$this->setTemplatePath($this->module_path.'tpl');
-			$this->setTemplateFile('bitly_index');
+			
+            Context::set('total_count', $output->page_navigation->total_count);
+            Context::set('total_page', $output->page_navigation->total_page);
+            Context::set('page', $output->page);
+            Context::set('sns_list', $output->data);
+            Context::set('page_navigation', $output->page_navigation);
+			
+			$this->setTemplateFile('sns_list');
 		}
 	}
-?>
