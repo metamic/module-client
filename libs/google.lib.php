@@ -42,7 +42,7 @@
 			// 위변조 체크
 			if(!Context::get('code') || Context::get('state') !== $_SESSION['socialxe_auth']['state'])
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 
 			// API 요청 : 엑세스 토큰
@@ -54,11 +54,13 @@
 				'redirect_uri' => getNotEncodedFullUrl('', 'module', 'socialxe', 'act', 'procSocialxeCallback', 'service', 'google'),
 			));
 
+			error_log("This is Test");
+
 			// 토큰 삽입
 			$this->setAccessToken($token['access_token']);
 			$this->setRefreshToken($token['refresh_token']);
 
-			return new Object();
+			return new BaseObject();
 		}
 
 		/**
@@ -69,7 +71,7 @@
 			// 토큰 체크
 			if(!$this->getAccessToken())
 			{
-				return new Object(-1, 'msg_errer_api_connect');
+				return new BaseObject(-1, 'msg_errer_api_connect');
 			}
 
 			// API 요청 : 프로필
@@ -80,7 +82,7 @@
 			// 프로필 데이터가 없다면 오류
 			if(empty($profile))
 			{
-				return new Object(-1, 'msg_errer_api_connect');
+				return new BaseObject(-1, 'msg_errer_api_connect');
 			}
 
 			// 팔로워 수 제한
@@ -90,7 +92,7 @@
 				{
 					$this->revokeToken();
 
-					return new Object(-1, sprintf(Context::getLang('msg_not_sns_follower_count'), $this->config->sns_follower_count));
+					return new BaseObject(-1, sprintf(Context::getLang('msg_not_sns_follower_count'), $this->config->sns_follower_count));
 				}
 			}
 
@@ -120,7 +122,7 @@
 			// 전체 데이터
 			$this->setProfileEtc($profile);
 
-			return new Object();
+			return new BaseObject();
 		}
 
 		/**

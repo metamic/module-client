@@ -49,25 +49,25 @@
 		}
 		
 		/**
-		 * @brief ¸ðµâ ¼³Ä¡
+		 * @brief ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
 		 */
 		function moduleInstall()
 		{
             $oModuleModel = getModel('module');
             $oModuleController = getController('module');
 			
-			return new Object();
+			return new BaseObject();
 		}
 
 		/**
-		 * @brief ¾÷µ¥ÀÌÆ® Ã¼Å©
+		 * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® Ã¼Å©
 		 */
 		function checkUpdate()
 		{
             $oDB = DB::getInstance();
             $oModuleModel = getModel('module');	
 			
-			// Æ®¸®°Å ¼³Ä¡
+			// Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
 			foreach($this->triggers as $trigger)
 			{
 				if(!$oModuleModel->getTrigger($trigger[0], $trigger[1], $trigger[2], $trigger[3], $trigger[4]))
@@ -80,7 +80,7 @@
 		}
 
 		/**
-		 * @brief ¾÷µ¥ÀÌÆ®
+		 * @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 		 */
 		function moduleUpdate()
 		{
@@ -88,7 +88,7 @@
             $oModuleModel = getModel('module');
             $oModuleController = getController('module');
 			
-			// Æ®¸®°Å ¼³Ä¡
+			// Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
 			foreach($this->triggers as $trigger)
 			{
 				if(!$oModuleModel->getTrigger($trigger[0], $trigger[1], $trigger[2], $trigger[3], $trigger[4]))
@@ -97,18 +97,18 @@
 				}
 			}
 			
-			return new Object(0, 'success_updated');
+			return new BaseObject(0, 'success_updated');
 		}
 		
 		/**
-		 * @brief ¸ðµâ »èÁ¦
+		 * @brief ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		 */
 		function moduleUninstall()
 		{
             $oModuleModel = getModel('module');
             $oModuleController = getController('module');
 			
-			// Æ®¸®°Å »èÁ¦
+			// Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			foreach($this->triggers as $trigger)
 			{
 				if($oModuleModel->getTrigger($trigger[0], $trigger[1], $trigger[2], $trigger[3], $trigger[4]))
@@ -117,18 +117,18 @@
 				}
 			}
 			
-			return new Object();
+			return new BaseObject();
 		}
 		
 		/**
-		 * @brief Ä³½ÃÆÄÀÏ Àç»ý¼º
+		 * @brief Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 		 */
 		function recompileCache()
 		{
 		}
 		
  		/**
-		 *@brief ¼³Á¤
+		 *@brief ï¿½ï¿½ï¿½ï¿½
 		 **/
         function getConfig() 
 		{

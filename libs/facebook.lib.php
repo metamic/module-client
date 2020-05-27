@@ -44,7 +44,7 @@
 			// 위변조 체크
 			if(!Context::get('code') || Context::get('state') !== $_SESSION['socialxe_auth']['state'])
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			// API 요청 : 엑세스 토큰
@@ -66,7 +66,7 @@
 			// 토큰 삽입
 			$this->setAccessToken($token['access_token']);
 			
-			return new Object();
+			return new BaseObject();
 		}
 		
 		/**
@@ -77,7 +77,7 @@
 			// 토큰 체크
 			if(!$this->getAccessToken())
 			{
-				return new Object(-1, 'msg_errer_api_connect');
+				return new BaseObject(-1, 'msg_errer_api_connect');
 			}
 			
 			// 요청 필드
@@ -105,7 +105,7 @@
 			// 프로필 데이터가 없다면 오류
 			if(empty($profile) || $profile['error']['message'])
 			{
-				return new Object(-1, Context::getLang('msg_errer_api_connect') . $profile['error']['message']);
+				return new BaseObject(-1, Context::getLang('msg_errer_api_connect') . $profile['error']['message']);
 			}
 			
 			// 팔로워 수 제한 (페이스북의 경우 '친구 수')
@@ -115,7 +115,7 @@
 				{
 					$this->revokeToken();
 					
-					return new Object(-1, sprintf(Context::getLang('msg_not_sns_follower_count'), $this->config->sns_follower_count));
+					return new BaseObject(-1, sprintf(Context::getLang('msg_not_sns_follower_count'), $this->config->sns_follower_count));
 				}
 			}
 			
@@ -137,7 +137,7 @@
 			// 전체 데이터
 			$this->setProfileEtc($profile);
 			
-			return new Object();
+			return new BaseObject();
 		}
 		
 		/**

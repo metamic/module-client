@@ -17,7 +17,7 @@
 			
             Context::addJsFile($this->module_path . 'tpl/js/socialxe.js');
 			
-			// »ç¿ëÀÚ ·¹ÀÌ¾Æ¿ô
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾Æ¿ï¿½
 			if($this->config->layout_srl && $layout_path = getModel('layout')->getLayout($this->config->layout_srl)->path)
 			{
 				$this->module_info->layout_srl = $this->config->layout_srl;
@@ -27,13 +27,13 @@
         }
 
 		/**
-		 * @brief SNS °ü¸®
+		 * @brief SNS ï¿½ï¿½ï¿½ï¿½
 		 */
 		function dispSocialxeSnsManage()
 		{
             if(!Context::get('is_logged'))
 			{
-				return new Object(-1, 'msg_not_logged');
+				return new BaseObject(-1, 'msg_not_logged');
 			}
 			
 			$oSocialxeModel = getModel('socialxe');
@@ -65,13 +65,13 @@
 		}
 		
 		/**
-		 * @brief ÀÌ¸ÞÀÏ È®ÀÎ
+		 * @brief ï¿½Ì¸ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 		 */
 		function dispSocialxeConfirmMail()
 		{
 			if(!$_SESSION['tmp_socialxe_confirm_email'])
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			Context::set('service', $_SESSION['tmp_socialxe_confirm_email']['service']);
@@ -84,13 +84,13 @@
 		}
 		
 		/**
-		 * @brief Ãß°¡Á¤º¸ ÀÔ·Â
+		 * @brief ï¿½ß°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½
 		 */
 		function dispSocialxeInputAddInfo()
 		{
 			if(!$_SESSION['tmp_socialxe_input_add_info'])
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			$_SESSION['socialxe_input_add_info'] = $_SESSION['tmp_socialxe_input_add_info'];
@@ -104,7 +104,7 @@
 			
 			$signupForm = array();
 			
-			// ÇÊ¼ö Ãß°¡ °¡ÀÔÆû Ãâ·Â
+			// ï¿½Ê¼ï¿½ ï¿½ß°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 			if(in_array('require_add_info', $this->config->sns_input_add_info))
 			{
 				foreach($member_config->signupForm as $no => $formInfo)
@@ -127,7 +127,7 @@
 				getView('member')->addExtraFormValidatorMessage();
 			}
 			
-			// ¾ÆÀÌµð Æû
+			// ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½
 			if(in_array('user_id', $this->config->sns_input_add_info))
 			{
 				$args = new stdClass;
@@ -136,7 +136,7 @@
 				$signupForm[] = $args;
 			}
 			
-			// ´Ð³×ÀÓ Æû
+			// ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½
 			if(in_array('nick_name', $this->config->sns_input_add_info))
 			{
 				$args = new stdClass;
@@ -145,47 +145,47 @@
 				$signupForm[] = $args;
 			}
 			
-			// ·ê¼Â »ý¼º
+			// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			$this->_createAddInfoRuleset($signupForm, in_array('agreement', $this->config->sns_input_add_info));
 			
 			$this->setTemplateFile('input_add_info');
 		}
 		
 		/**
-		 * @brief SNS ¿¬°á ÁøÇà
+		 * @brief SNS ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		 */
 		function dispSocialxeConnectSns()
 		{
 			if(isCrawler())
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			if(!($service = Context::get('service')) || !in_array($service, $this->config->sns_services))
 			{
-				return new Object(-1, 'msg_not_support_service_login');
+				return new BaseObject(-1, 'msg_not_support_service_login');
 			}
 			
 			if(!$oLibrary = $this->getLibrary($service))
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			if(!$type = Context::get('type'))
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			if($type == 'register' && !Context::get('is_logged'))
 			{
-				return new Object(-1, 'msg_not_logged');
+				return new BaseObject(-1, 'msg_not_logged');
 			}
 			else if($type == 'login' && Context::get('is_logged'))
 			{
-				return new Object(-1, 'already_logged');
+				return new BaseObject(-1, 'already_logged');
 			}
 			
-			// ÀÎÁõ ¸ÞÀÏ À¯È¿ ½Ã°£
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¿ ï¿½Ã°ï¿½
 			if($this->config->mail_auth_valid_hour)
 			{
 				$args = new stdClass;
@@ -218,7 +218,7 @@
 			
 			$this->setRedirectUrl($oLibrary->createAuthUrl($type));
 			
-			// ·Î±× ±â·Ï
+			// ï¿½Î±ï¿½ ï¿½ï¿½ï¿½
 			$info = new stdClass;
 			$info->sns = $service;
 			$info->type = $type;
@@ -226,23 +226,23 @@
 		}
 		
 		/**
-		 * @brief SNS ÇÁ·ÎÇÊ
+		 * @brief SNS ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		 */
 		function dispSocialxeSnsProfile()
 		{
 			if($this->config->sns_profile != 'Y')
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			if(!Context::get('member_srl'))
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			if(!($member_info = getModel('member')->getMemberInfoByMemberSrl(Context::get('member_srl'))) || !$member_info->member_srl)
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			Context::set('member_info', $member_info);
@@ -268,7 +268,7 @@
 		}
 		
 		/**
-		 * @brief ÇÊ¼ö Ãß°¡Æû ·ê¼Â ÆÄÀÏ »ý¼º
+		 * @brief ï¿½Ê¼ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		 */
 		function _createAddInfoRuleset($signupForm, $agreement = false)
 		{

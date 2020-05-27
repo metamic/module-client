@@ -39,13 +39,13 @@
 			// 토큰 세션 체크
 			if(!Context::get('oauth_verifier') || !$_SESSION['socialxe_auth']['token'] || !$_SESSION['socialxe_auth']['token_secret'])
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			// 위변조 체크
 			if(Context::get('oauth_token') !== $_SESSION['socialxe_auth']['token'])
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			$connection = new TwitterOAuth($this->config->twitter_consumer_key, $this->config->twitter_consumer_secret, $_SESSION['socialxe_auth']['token'], $_SESSION['socialxe_auth']['token_secret']);
@@ -56,7 +56,7 @@
 			// 토큰 삽입
 			$this->setAccessToken(array('token' => $token['oauth_token'], 'token_secret' => $token['oauth_token_secret']));
 			
-			return new Object();
+			return new BaseObject();
 		}
 		
 		/**
@@ -67,7 +67,7 @@
 			// 토큰 체크
 			if(!$token = parent::getAccessToken())
 			{
-				return new Object(-1, 'msg_errer_api_connect');
+				return new BaseObject(-1, 'msg_errer_api_connect');
 			}
 			
 			$connection = new TwitterOAuth($this->config->twitter_consumer_key, $this->config->twitter_consumer_secret, $token['token'], $token['token_secret']);
@@ -75,7 +75,7 @@
 			// API 요청 : 프로필
 			if(!($profile = $connection->get('account/verify_credentials', array('include_email' => 'true'))) || empty($profile))
 			{
-				return new Object(-1, 'msg_errer_api_connect');
+				return new BaseObject(-1, 'msg_errer_api_connect');
 			}
 			
 			// 계정 차단 확인
@@ -84,7 +84,7 @@
 				// API 요청 : 사용자 정보
 				if(!($user = $connection->get('users/show', array('user_id' => $profile['id']))) || !$user['id'])
 				{
-					return new Object(-1, 'msg_sns_suspended_account');
+					return new BaseObject(-1, 'msg_sns_suspended_account');
 				}
 			}
 			
@@ -95,7 +95,7 @@
 				{
 					$this->revokeToken();
 					
-					return new Object(-1, sprintf(Context::getLang('msg_not_sns_follower_count'), $this->config->sns_follower_count));
+					return new BaseObject(-1, sprintf(Context::getLang('msg_not_sns_follower_count'), $this->config->sns_follower_count));
 				}
 			}
 			
@@ -117,7 +117,7 @@
 			// 전체 데이터
 			$this->setProfileEtc($profile);
 			
-			return new Object();
+			return new BaseObject();
 		}
 		
 		/**
@@ -142,7 +142,7 @@
 		function checkLinkage()
 		{
 			// 트위터는 연동 가능
-			return new Object();
+			return new BaseObject();
 		}
 		
 		/**

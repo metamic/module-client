@@ -33,13 +33,13 @@
 			// 오류가 있을 경우 메세지 출력
 			if(Context::get('error'))
 			{
-				return new Object(-1, 'Error ' . Context::get('error') . ' : ' . Context::get('error_description'));
+				return new BaseObject(-1, 'Error ' . Context::get('error') . ' : ' . Context::get('error_description'));
 			}
 			
 			// 위변조 체크
 			if(!Context::get('code') || Context::get('state') !== $_SESSION['socialxe_auth']['state'])
 			{
-				return new Object(-1, 'msg_invalid_request');
+				return new BaseObject(-1, 'msg_invalid_request');
 			}
 			
 			// API 요청 : 엑세스 토큰
@@ -55,7 +55,7 @@
 			$this->setAccessToken($token['access_token']);
 			$this->setRefreshToken($token['refresh_token']);
 			
-			return new Object();
+			return new BaseObject();
 		}
 		
 		/**
@@ -66,7 +66,7 @@
 			// 토큰 체크
 			if(!$this->getAccessToken())
 			{
-				return new Object(-1, 'msg_errer_api_connect');
+				return new BaseObject(-1, 'msg_errer_api_connect');
 			}
 			
 			// API 요청 : 프로필
@@ -75,7 +75,7 @@
 			// 프로필 데이터가 없다면 오류
 			if(!($profile = $profile['response']) || empty($profile))
 			{
-				return new Object(-1, 'msg_errer_api_connect');
+				return new BaseObject(-1, 'msg_errer_api_connect');
 			}
 			
 			// 이메일 주소
@@ -116,7 +116,7 @@
 			// 전체 데이터
 			$this->setProfileEtc($profile);
 			
-			return new Object();
+			return new BaseObject();
 		}
 		
 		/**

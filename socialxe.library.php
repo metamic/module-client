@@ -45,7 +45,7 @@
 		 */
 		function authenticate()
 		{
-			return new Object();
+			return new BaseObject();
 		}
 		
 		/**
@@ -53,7 +53,7 @@
 		 */
 		function loading()
 		{
-			return new Object();
+			return new BaseObject();
 		}
 		
 		/**
@@ -76,7 +76,7 @@
 		function checkLinkage()
 		{
 			// 기본적으로는 연동 불가 메세지
-			return new Object(-1, sprintf(Context::getLang('msg_not_support_linkage_setting'), ucwords($this->service)));
+			return new BaseObject(-1, sprintf(Context::getLang('msg_not_support_linkage_setting'), ucwords($this->service)));
 		}
 		
 		/**
