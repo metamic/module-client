@@ -17,4 +17,4 @@
 - PHP 7.2 대응 ([원본 글](https://xetown.com/point_contents/1196345))
 - Google OAuth2 인증 수정 적용 ([원본 글](https://xetown.com/point_contents/1196345))
 - 카카오 OAuth2 인증 적용 수정 ([원본 글](https://xetown.com/index.php?&mid=point_contents&search_target=title_content&search_keyword=%EC%86%8C%EC%85%9C&document_srl=1360627))
-- Google OAuth2 로그인 
+- Google OAuth2 로그인 최신화
