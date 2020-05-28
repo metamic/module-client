@@ -3,10 +3,12 @@
 	 * @class  libraryGoogle
      * @author CONORY (https://xe.conory.com)
 	 * @brief The google library of the socialxe module
+	 * 
 	 */
 
-	const GOOGLE_OAUTH2_URI = 'https://accounts.google.com/o/oauth2/';
-	const GOOGLE_PEOPLE_URI = 'https://www.googleapis.com/plus/v1/people/';
+	const GOOGLE_OAUTH2_URI 	= 'https://accounts.google.com/o/oauth2/';
+	//const GOOGLE_PEOPLE_URI 	= 'https://www.googleapis.com/plus/v1/people/';
+	const GOOGLE_PROFILE_URI	= 'https://www.googleapis.com/oauth2/v1/userinfo';
 
 	class libraryGoogle extends socialxeLibrary
 	{
@@ -17,6 +19,7 @@
 		{
 			// API 권한
 			$scope = array(
+				'openid',
 				'https://www.googleapis.com/auth/userinfo.email',
 				'https://www.googleapis.com/auth/userinfo.profile',
 			);
@@ -54,12 +57,11 @@
 				'redirect_uri' => getNotEncodedFullUrl('', 'module', 'socialxe', 'act', 'procSocialxeCallback', 'service', 'google'),
 			));
 
-			error_log("This is Test");
-
 			// 토큰 삽입
+			$this->setIdToken($token['id_token']);
 			$this->setAccessToken($token['access_token']);
 			$this->setRefreshToken($token['refresh_token']);
-
+			
 			return new BaseObject();
 		}
 
@@ -74,11 +76,28 @@
 				return new BaseObject(-1, 'msg_errer_api_connect');
 			}
 
+			$id_token 		= $this->getIdToken();
+			$id_token_arr 	= explode(".", $id_token);
+
+			$jwtHeaderStr 	= base64_decode($id_token_arr[0]);
+			$jwtPayloadStr 	= base64_decode($id_token_arr[1]);
+			$jwtSigStr		= base64_decode($id_token_arr[2]);
+
+			$jwtHeader 		= json_decode($jwtHeaderStr, true);
+			$jwtPayload 	= json_decode($jwtPayloadStr, true);
+			$jwtSignature	= json_decode($jwtSigStr, true);
+			
 			// API 요청 : 프로필
-			$profile = $this->requestAPI(GOOGLE_PEOPLE_URI . 'me?' . http_build_query(array(
+			$profile = $this->requestAPI(GOOGLE_PROFILE_URI . "?" . http_build_query(array(
 				'access_token' => $this->getAccessToken(),
+				'alt' => "json",
 			), '', '&'));
 
+			if($jwtPayload["email"] != $profile["email"] || $profile["verified_email"] == false)
+			{
+				return new BaseObject(-1, 'msg_errer_api_connect');
+			}
+		
 			// 프로필 데이터가 없다면 오류
 			if(empty($profile))
 			{
@@ -96,25 +115,12 @@
 				}
 			}
 
-			// 이메일 주소
-			if($profile['emails'])
-			{
-				foreach($profile['emails'] as $key => $val)
-				{
-					if($val['type'] == 'account' && $val['value'])
-					{
-						$this->setEmail($val['value']);
-
-						break;
-					}
-				}
-			}
-
-			// ID, 이름, 프로필 이미지, 프로필 URL
+			// 이메일 주소, ID, 이름, 프로필 이미지, 프로필 URL
+			$this->setEmail($profile['email']);
 			$this->setId($profile['id']);
-			$this->setName($profile['displayName']);
-			$this->setProfileImage($profile['image']['url']);
-			$this->setProfileUrl($profile['url']);
+			$this->setName($profile['name']);
+			$this->setProfileImage($profile['picture']);
+			$this->setProfileUrl($profile['picture']);
 
 			// 프로필 인증
 			$this->setVerified(true);
@@ -240,16 +246,19 @@
 
 		function requestAPI($url, $post = array())
 		{
-			return json_decode(FileHandler::getRemoteResource(
-					in_array($url, array('token', 'revoke')) ? GOOGLE_OAUTH2_URI . $url : $url,
-					null,
-					3,
-					empty($post) ? 'GET' : 'POST',
-					'application/x-www-form-urlencoded',
-					array(),
-					array(),
-					$post,
-					array('ssl_verify_peer' => false)
-			), true);
+			$data = FileHandler::getRemoteResource(
+				in_array($url, array('token', 'revoke')) ? GOOGLE_OAUTH2_URI . $url : $url,
+				null,
+				3,
+				empty($post) ? 'GET' : 'POST',
+				'application/x-www-form-urlencoded',
+				array(),
+				array(),
+				$post,
+				array('ssl_verify_peer' => false)
+			);
+			//error_log($data); 	// for debug
+			$res = json_decode($data, true);
+			return $res;
 		}
 	}

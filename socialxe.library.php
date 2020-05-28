@@ -26,6 +26,7 @@
 			);
 			
 			$this->token = array(
+				'id_token' => '',
 				'access' => '',
 				'refresh' => '',
 			);
@@ -111,6 +112,11 @@
 		{
 			$this->token['access'] = $access_token;
 		}
+
+		function setIdToken($id_toekn)
+		{
+			$this->token['id_token'] = $id_toekn;
+		}
 		
 		function setRefreshToken($refresh_token)
 		{
@@ -170,6 +176,11 @@
 		function getAccessToken()
 		{
 			return $this->token['access'];
+		}
+		
+		function getIdToken()
+		{
+			return $this->token['id_token'];
 		}
 		
 		function getRefreshToken()
